@@ -204,6 +204,7 @@ export default function ImpactExplorer() {
     const clockEl = $("clock");
     const recBox = $("recommendation");
     const recText = $("recommendation-text");
+    const chartMetricList = $("chart-metric-list");
 
     // Clear any pre-existing list contents (StrictMode double-mount)
     wordList.innerHTML = "";
@@ -241,6 +242,57 @@ export default function ImpactExplorer() {
       else solutionList.appendChild(row);
     });
 
+    const chartMetricRows = {};
+    function buildChartMetricList() {
+      chartMetricList.innerHTML = "";
+      let i = 1;
+      Object.entries(categories).forEach(([key, cat]) => {
+        const row = document.createElement("div");
+        row.dataset.key = key;
+        row.dataset.active = "false";
+        row.title = cat.word;
+        row.style.cssText =
+          "display: flex; align-items: center; gap: 6px; padding: 5px 6px; cursor: pointer; border-bottom: 1px dashed rgba(26,26,26,0.18); font-size: 10px; letter-spacing: 0.04em; transition: background 0.12s, color 0.12s;";
+        const arrow = cat.kind === "solution" ? "↑" : "↓";
+        row.innerHTML = `
+          <span style="font-size: 9px; opacity: 0.5; width: 18px; flex-shrink: 0;">[${String(i).padStart(2, "0")}]</span>
+          <span style="font-weight: 500; flex: 1; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;">${cat.word}</span>
+          <span style="font-size: 9px; opacity: 0.6; flex-shrink: 0;">${arrow}</span>
+        `;
+        row.addEventListener("mouseenter", () => {
+          if (row.dataset.active !== "true") {
+            row.style.background = "rgba(26,26,26,0.08)";
+          }
+        });
+        row.addEventListener("mouseleave", () => {
+          if (row.dataset.active !== "true") {
+            row.style.background = "";
+          }
+        });
+        row.addEventListener("click", () => {
+          if (key !== activeKey) openCategory(key);
+        });
+        chartMetricList.appendChild(row);
+        chartMetricRows[key] = row;
+        i++;
+      });
+    }
+    buildChartMetricList();
+
+    function setActiveMetric(key) {
+      Object.entries(chartMetricRows).forEach(([k, row]) => {
+        if (k === key) {
+          row.dataset.active = "true";
+          row.style.background = "#1a1a1a";
+          row.style.color = "#f5f3ec";
+        } else {
+          row.dataset.active = "false";
+          row.style.background = "";
+          row.style.color = "";
+        }
+      });
+    }
+
     function tickClock() {
       const d = new Date();
       const pad = (n) => String(n).padStart(2, "0");
@@ -252,8 +304,8 @@ export default function ImpactExplorer() {
     let activeKey = null;
     let animTimer = null;
 
-    function easeInOutCubic(t) {
-      return t < 0.5 ? 4 * t * t * t : 1 - Math.pow(-2 * t + 2, 3) / 2;
+    function easeOutQuart(t) {
+      return 1 - Math.pow(1 - t, 4);
     }
 
     function clearSvg() {
@@ -704,7 +756,7 @@ export default function ImpactExplorer() {
       statusLine.textContent = "> RUNNING";
       recBox.style.display = "none";
 
-      const duration = 2600;
+      const duration = 1700;
       const start = performance.now();
       let lastUpTo = -1;
       let lastCommentaryIdx = -1;
@@ -712,7 +764,7 @@ export default function ImpactExplorer() {
 
       function frame(now) {
         const linear = Math.min(1, (now - start) / duration);
-        const eased = easeInOutCubic(linear);
+        const eased = easeOutQuart(linear);
         const scaled = eased * N;
 
         let upTo, animProgress;
@@ -757,6 +809,7 @@ export default function ImpactExplorer() {
       chartView.style.display = "block";
       chartTitle.textContent = "> " + cat.title;
       chartSubtitle.textContent = cat.subtitle;
+      setActiveMetric(key);
       playAnimation(cat);
     }
 
@@ -923,7 +976,7 @@ export default function ImpactExplorer() {
         <div
           style={{
             display: "grid",
-            gridTemplateColumns: "1fr 200px",
+            gridTemplateColumns: "1fr 230px",
             gap: "20px",
           }}
         >
@@ -948,6 +1001,25 @@ export default function ImpactExplorer() {
               gap: "14px",
             }}
           >
+            <div style={{ border: "1px solid #1a1a1a", padding: "6px 8px" }}>
+              <div
+                style={{
+                  fontSize: "10px",
+                  letterSpacing: "0.08em",
+                  borderBottom: "1px solid #1a1a1a",
+                  paddingBottom: "4px",
+                  marginBottom: "4px",
+                  opacity: 0.7,
+                }}
+              >
+                METRICS
+              </div>
+              <div
+                id="chart-metric-list"
+                style={{ display: "flex", flexDirection: "column" }}
+              ></div>
+            </div>
+
             <div style={{ border: "1px solid #1a1a1a", padding: "8px 10px" }}>
               <div
                 style={{
