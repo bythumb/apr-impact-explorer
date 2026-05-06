@@ -138,3 +138,337 @@ body {
     display: block !important;
   }
 }
+
+/* ============== ELECTRONIC PRESS KIT ============== */
+
+#epk-app {
+  background: #f5f3ec;
+  border: 1px solid rgba(26, 26, 26, 0.18);
+  border-radius: 12px;
+  padding: 1.75rem 2rem;
+  font-family: "Courier New", ui-monospace, monospace;
+  color: #1a1a1a;
+}
+
+.epk-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  font-size: 11px;
+  letter-spacing: 0.08em;
+  padding-bottom: 10px;
+  border-bottom: 1px solid #1a1a1a;
+}
+
+.epk-brand { font-weight: 500; }
+.epk-brand-sub { opacity: 0.7; margin-top: 2px; }
+.epk-status { text-align: right; font-weight: 500; }
+
+.epk-rule {
+  border: none;
+  border-top: 1px dashed rgba(26, 26, 26, 0.3);
+  margin: 28px 0;
+}
+
+.epk-tag {
+  font-size: 10px;
+  letter-spacing: 0.14em;
+  opacity: 0.6;
+  margin-bottom: 4px;
+}
+
+.epk-section-label {
+  font-size: 11px;
+  letter-spacing: 0.14em;
+  opacity: 0.7;
+  margin-bottom: 14px;
+  font-weight: 500;
+}
+
+.epk-section-label::before {
+  content: "> ";
+}
+
+/* Hero */
+.epk-hero {
+  display: grid;
+  grid-template-columns: 280px 1fr;
+  gap: 28px;
+  padding-top: 12px;
+  align-items: start;
+}
+
+.epk-hero-photo img {
+  width: 100%;
+  height: auto;
+  display: block;
+  border: 1px solid #1a1a1a;
+  filter: grayscale(0.15) contrast(1.05);
+}
+
+.epk-photo-caption {
+  font-size: 10px;
+  letter-spacing: 0.08em;
+  opacity: 0.6;
+  margin-top: 6px;
+}
+
+.epk-name {
+  font-family: "Times New Roman", Georgia, serif;
+  font-size: 56px;
+  line-height: 1;
+  letter-spacing: 0.01em;
+  margin: 4px 0 6px;
+  font-weight: 400;
+}
+
+.epk-tagline {
+  font-size: 11px;
+  letter-spacing: 0.08em;
+  opacity: 0.7;
+  margin-bottom: 18px;
+}
+
+.epk-stat-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 8px;
+  margin-bottom: 18px;
+}
+
+.epk-pitch {
+  font-size: 13px;
+  line-height: 1.6;
+  border-left: 3px solid #1a1a1a;
+  padding-left: 14px;
+}
+
+.epk-pitch strong { font-weight: 700; }
+
+/* Prose sections */
+.epk-section { padding: 4px 0; }
+
+.epk-prose {
+  font-size: 13px;
+  line-height: 1.65;
+  max-width: 760px;
+}
+.epk-prose p { margin: 0 0 12px; }
+.epk-prose strong { font-weight: 700; }
+
+.epk-note {
+  font-size: 10px;
+  letter-spacing: 0.06em;
+  opacity: 0.6;
+  margin-top: 12px;
+}
+
+/* Repertoire table */
+.epk-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 12px;
+}
+.epk-table th {
+  text-align: left;
+  font-size: 10px;
+  letter-spacing: 0.1em;
+  opacity: 0.7;
+  border-bottom: 1px solid #1a1a1a;
+  padding: 6px 10px 6px 0;
+  font-weight: 500;
+}
+.epk-table td {
+  padding: 8px 10px 8px 0;
+  border-bottom: 1px dashed rgba(26, 26, 26, 0.2);
+}
+.epk-table td:nth-child(3) {
+  font-family: "Times New Roman", Georgia, serif;
+  font-size: 16px;
+}
+.epk-dim { opacity: 0.6; }
+
+/* Bars */
+.epk-bars { display: flex; flex-direction: column; gap: 8px; }
+.epk-bar-row {
+  display: grid;
+  grid-template-columns: 220px 1fr 50px;
+  gap: 12px;
+  align-items: center;
+  font-size: 11px;
+  letter-spacing: 0.06em;
+}
+.epk-bar-label { opacity: 0.85; }
+.epk-bar-track {
+  height: 10px;
+  background: rgba(26, 26, 26, 0.1);
+  border: 1px solid #1a1a1a;
+  position: relative;
+  display: block;
+}
+.epk-bar-fill {
+  position: absolute;
+  inset: 0 auto 0 0;
+  background: #1a1a1a;
+  display: block;
+}
+.epk-bar-pct {
+  font-family: "Times New Roman", Georgia, serif;
+  font-size: 14px;
+  text-align: right;
+}
+
+/* Quotes */
+.epk-quotes { display: flex; flex-direction: column; gap: 14px; }
+.epk-quote {
+  margin: 0;
+  border-left: 3px solid #1a1a1a;
+  padding: 4px 14px;
+}
+.epk-quote-body {
+  font-family: "Times New Roman", Georgia, serif;
+  font-size: 17px;
+  line-height: 1.45;
+}
+.epk-quote-by {
+  font-size: 10px;
+  letter-spacing: 0.1em;
+  opacity: 0.65;
+  margin-top: 6px;
+}
+
+/* Ask */
+.epk-ask {
+  display: flex;
+  flex-direction: column;
+  gap: 0;
+  border: 1px solid #1a1a1a;
+}
+.epk-ask-row {
+  display: grid;
+  grid-template-columns: 200px 1fr;
+  gap: 14px;
+  padding: 10px 14px;
+  font-size: 12px;
+  letter-spacing: 0.04em;
+  border-bottom: 1px dashed rgba(26, 26, 26, 0.25);
+}
+.epk-ask-row:last-child { border-bottom: none; }
+.epk-ask-key { opacity: 0.6; font-size: 10px; letter-spacing: 0.1em; align-self: center; }
+.epk-ask-val { font-weight: 500; }
+
+.epk-pull {
+  margin-top: 22px;
+  padding: 16px 20px;
+  background: #1a1a1a;
+  color: #f5f3ec;
+  font-family: "Times New Roman", Georgia, serif;
+  font-size: 18px;
+  line-height: 1.5;
+}
+
+/* Contact */
+.epk-contact-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 18px;
+  font-size: 12px;
+  line-height: 1.55;
+}
+.epk-contact-key {
+  font-size: 10px;
+  letter-spacing: 0.1em;
+  opacity: 0.6;
+  margin-bottom: 4px;
+}
+
+/* Footer */
+.epk-footer {
+  margin-top: 28px;
+  padding-top: 16px;
+  border-top: 1px solid #1a1a1a;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 12px;
+  font-size: 11px;
+  letter-spacing: 0.06em;
+}
+.epk-back {
+  color: inherit;
+  text-decoration: none;
+  font-weight: 500;
+}
+.epk-back:hover { text-decoration: underline; }
+
+/* Site nav (link to EPK from index) */
+.site-nav {
+  display: flex;
+  justify-content: flex-end;
+  font-size: 11px;
+  letter-spacing: 0.08em;
+  margin: 0 0 8px;
+}
+.site-nav a {
+  color: inherit;
+  text-decoration: none;
+  padding: 6px 10px;
+  border: 1px solid #1a1a1a;
+  background: #f5f3ec;
+}
+.site-nav a:hover {
+  background: #1a1a1a;
+  color: #f5f3ec;
+}
+
+/* EPK mobile */
+@media (max-width: 720px) {
+  #epk-app {
+    margin: 0 !important;
+    border: none !important;
+    border-radius: 0 !important;
+    padding: 14px 16px 24px !important;
+  }
+  .epk-hero {
+    grid-template-columns: 1fr;
+    gap: 16px;
+  }
+  .epk-name {
+    font-size: 38px;
+  }
+  .epk-stat-grid {
+    grid-template-columns: 1fr 1fr;
+  }
+  .epk-bar-row {
+    grid-template-columns: 130px 1fr 38px;
+    font-size: 10px;
+    gap: 8px;
+  }
+  .epk-table {
+    font-size: 11px;
+  }
+  .epk-table td:nth-child(3) {
+    font-size: 14px;
+  }
+  .epk-ask-row {
+    grid-template-columns: 1fr;
+    gap: 4px;
+  }
+  .epk-contact-grid {
+    grid-template-columns: 1fr;
+  }
+  .epk-quote-body {
+    font-size: 15px;
+  }
+  .epk-pull {
+    font-size: 15px;
+    padding: 12px 14px;
+  }
+  .epk-rule {
+    margin: 18px 0;
+  }
+  .epk-header {
+    font-size: 9px;
+  }
+}
