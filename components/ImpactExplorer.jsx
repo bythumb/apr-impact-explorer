@@ -164,7 +164,7 @@ export default function ImpactExplorer() {
           "> Y2: $0.5M. EP release. Existing fanbase converts to first-week album sales.",
           "> Y3: $2.4M. Tour built around YouTube fan geography. Sold-out small venues.",
           "> Y4: $8.7M. Major-market touring. Brand partnerships. Sync licensing.",
-          "> Y5: $24.3M. Headlining artist. Comparable to Bieber 2010 trajectory ($53M est.).",
+          "> Y5: $24.3M label revenue. On the road, Bieber tours already average $195.8M revenue / $1.37M per concert / 2.35M tickets per tour.",
         ],
       },
     };
@@ -181,9 +181,9 @@ export default function ImpactExplorer() {
       layoffs:
         "5,200+ industry jobs gone. The labels that survive are restructuring around digital-native artists with built-in audiences. APR Records must do the same.",
       youtube:
-        "Audiences and discovery have moved to YouTube. Scooter Braun signed Justin Bieber from a YouTube cover video in 2008. The next breakout artist is already on the platform — APR Records needs to find them.",
+        "Audiences and discovery have moved to YouTube. Scooter Braun and Usher's RBMG already signed Bieber from a YouTube cover in 2008 — they have management locked, they need a label. The next breakout artist is already on the platform. APR Records signs them now or pays 10× later.",
       pivot:
-        "Sign a YouTube-discovered artist with an existing audience. Skip the radio-promo budget. Tour the fanbase that already exists. The Bieber model is the proof of concept — and the data above is the case for adopting it now.",
+        "APR Records' move: 360 joint venture with RBMG, 50/50 profit split. Inject our infrastructure into Bieber's pre-validated YouTube audience; Usher anchors the mentorship. Tours already average $195.8M revenue, $1.37M per concert, 2.35M tickets. The discovery discount only exists in this window.",
     };
 
     const homeView = $("home-view");
