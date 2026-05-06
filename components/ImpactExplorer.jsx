@@ -392,7 +392,7 @@ export default function ImpactExplorer() {
       });
     }
 
-    function renderBarH(cat, upTo, animProgress) {
+    function renderBarH(cat, globalProgress) {
       clearSvg();
       const rowH = PLOT_H / years.length;
       years.forEach((yr, i) => {
@@ -431,24 +431,23 @@ export default function ImpactExplorer() {
       }
       const barH = rowH * 0.55;
       years.forEach((yr, i) => {
-        if (i < upTo) {
-          const v = cat.values[i];
-          const fullW = (v / cat.yMax) * PLOT_W;
-          const isAnim = i === upTo - 1;
-          const w = isAnim ? fullW * animProgress : fullW;
-          const cy = PAD.t + (i + 0.5) * rowH;
+        const v = cat.values[i];
+        const fullW = (v / cat.yMax) * PLOT_W;
+        const w = fullW * globalProgress;
+        const cy = PAD.t + (i + 0.5) * rowH;
+        if (w > 0) {
           chartSvg.appendChild(svgEl("rect", {
             x: PAD.l, y: cy - barH / 2, width: w, height: barH, fill: "#1a1a1a",
           }));
-          if (!isAnim || animProgress > 0.85) {
-            const lbl = svgEl("text", {
-              x: PAD.l + w + 6, y: cy + 3,
-              "text-anchor": "start", "font-size": "10",
-              "font-family": "Courier New, monospace", fill: "#1a1a1a", "font-weight": "500",
-            });
-            lbl.textContent = cat.format(v);
-            chartSvg.appendChild(lbl);
-          }
+        }
+        if (globalProgress > 0.85) {
+          const lbl = svgEl("text", {
+            x: PAD.l + w + 6, y: cy + 3,
+            "text-anchor": "start", "font-size": "10",
+            "font-family": "Courier New, monospace", fill: "#1a1a1a", "font-weight": "500",
+          });
+          lbl.textContent = cat.format(v);
+          chartSvg.appendChild(lbl);
         }
       });
     }
@@ -738,7 +737,7 @@ export default function ImpactExplorer() {
     function renderFor(cat, upTo, animProgress, globalProgress) {
       switch (cat.chartType) {
         case "bar": renderBar(cat, globalProgress); break;
-        case "bar-h": renderBarH(cat, upTo, animProgress); break;
+        case "bar-h": renderBarH(cat, globalProgress); break;
         case "line": renderLine(cat, upTo, animProgress); break;
         case "area": renderArea(cat, upTo, animProgress); break;
         case "pie": renderPie(cat, upTo, animProgress); break;
