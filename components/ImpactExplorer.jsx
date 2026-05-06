@@ -356,7 +356,7 @@ export default function ImpactExplorer() {
     }
     function xPos(i) { return PAD.l + ((i + 0.5) / years.length) * PLOT_W; }
 
-    function renderBar(cat, upTo, animProgress) {
+    function renderBar(cat, globalProgress) {
       clearSvg();
       drawAxes(cat);
       const barW = (PLOT_W / years.length) * 0.55;
@@ -369,25 +369,25 @@ export default function ImpactExplorer() {
         });
         xLabel.textContent = yr;
         chartSvg.appendChild(xLabel);
-        if (i < upTo) {
-          const v = cat.values[i];
-          const yTop = yScale(v, cat);
-          const fullH = PAD.t + PLOT_H - yTop;
-          const isAnim = i === upTo - 1;
-          const h = isAnim ? fullH * animProgress : fullH;
-          const y = PAD.t + PLOT_H - h;
+
+        const v = cat.values[i];
+        const yTop = yScale(v, cat);
+        const fullH = PAD.t + PLOT_H - yTop;
+        const h = fullH * globalProgress;
+        const y = PAD.t + PLOT_H - h;
+        if (h > 0) {
           chartSvg.appendChild(svgEl("rect", {
             x: cx - barW / 2, y: y, width: barW, height: h, fill: "#1a1a1a",
           }));
-          if (!isAnim || animProgress > 0.85) {
-            const lbl = svgEl("text", {
-              x: cx, y: y - 5,
-              "text-anchor": "middle", "font-size": "10",
-              "font-family": "Courier New, monospace", fill: "#1a1a1a", "font-weight": "500",
-            });
-            lbl.textContent = cat.format(v);
-            chartSvg.appendChild(lbl);
-          }
+        }
+        if (globalProgress > 0.85) {
+          const lbl = svgEl("text", {
+            x: cx, y: y - 5,
+            "text-anchor": "middle", "font-size": "10",
+            "font-family": "Courier New, monospace", fill: "#1a1a1a", "font-weight": "500",
+          });
+          lbl.textContent = cat.format(v);
+          chartSvg.appendChild(lbl);
         }
       });
     }
@@ -735,9 +735,9 @@ export default function ImpactExplorer() {
       }
     }
 
-    function renderFor(cat, upTo, animProgress) {
+    function renderFor(cat, upTo, animProgress, globalProgress) {
       switch (cat.chartType) {
-        case "bar": renderBar(cat, upTo, animProgress); break;
+        case "bar": renderBar(cat, globalProgress); break;
         case "bar-h": renderBarH(cat, upTo, animProgress); break;
         case "line": renderLine(cat, upTo, animProgress); break;
         case "area": renderArea(cat, upTo, animProgress); break;
@@ -756,7 +756,7 @@ export default function ImpactExplorer() {
       statusLine.textContent = "> RUNNING";
       recBox.style.display = "none";
 
-      const duration = 1700;
+      const duration = 2400;
       const start = performance.now();
       let lastUpTo = -1;
       let lastCommentaryIdx = -1;
@@ -776,7 +776,7 @@ export default function ImpactExplorer() {
           animProgress = scaled - Math.floor(scaled);
         }
 
-        renderFor(cat, upTo, animProgress);
+        renderFor(cat, upTo, animProgress, eased);
         updatePhaseBar(eased);
 
         const cIdx = Math.min(N - 1, Math.floor(scaled));
