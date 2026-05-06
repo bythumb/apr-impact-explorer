@@ -199,8 +199,6 @@ export default function ImpactExplorer() {
     const totalValue = $("total-value");
     const commentary = $("commentary");
     const phaseBar = $("phase-bar");
-    const playBtn = $("play-btn");
-    const stepBtn = $("step-btn");
     const backBtn = $("back-btn");
     const statusLine = $("status-line");
     const clockEl = $("clock");
@@ -252,11 +250,10 @@ export default function ImpactExplorer() {
     tickClock();
 
     let activeKey = null;
-    let phase = 0;
     let animTimer = null;
 
-    function easeOutCubic(t) {
-      return 1 - Math.pow(1 - t, 3);
+    function easeInOutCubic(t) {
+      return t < 0.5 ? 4 * t * t * t : 1 - Math.pow(-2 * t + 2, 3) / 2;
     }
 
     function clearSvg() {
@@ -662,14 +659,27 @@ export default function ImpactExplorer() {
       }
     }
 
-    function updatePhaseBar(upTo) {
+    let phaseBarFills = [];
+    function buildPhaseBar() {
       phaseBar.innerHTML = "";
+      phaseBarFills = [];
       for (let i = 0; i < years.length; i++) {
         const seg = document.createElement("div");
-        seg.style.cssText = `flex:1; height:4px; background: ${
-          i < upTo ? "#1a1a1a" : "rgba(26,26,26,0.15)"
-        }; transition: background 0.15s;`;
+        seg.style.cssText =
+          "flex:1; height:4px; background: rgba(26,26,26,0.15); position: relative; overflow: hidden;";
+        const fill = document.createElement("div");
+        fill.style.cssText =
+          "position: absolute; left: 0; top: 0; bottom: 0; width: 0%; background: #1a1a1a;";
+        seg.appendChild(fill);
         phaseBar.appendChild(seg);
+        phaseBarFills.push(fill);
+      }
+    }
+    function updatePhaseBar(progress) {
+      const scaled = progress * years.length;
+      for (let i = 0; i < years.length; i++) {
+        const f = Math.max(0, Math.min(1, scaled - i));
+        if (phaseBarFills[i]) phaseBarFills[i].style.width = f * 100 + "%";
       }
     }
 
@@ -683,74 +693,61 @@ export default function ImpactExplorer() {
       }
     }
 
-    function animatePhase(cat, toPhase, onDone) {
-      const duration = 220;
+    function playAnimation(cat) {
+      if (animTimer) cancelAnimationFrame(animTimer);
+
+      buildPhaseBar();
+      updateSidebar(cat, 0);
+      updatePhaseBar(0);
+      renderFor(cat, 0, 0);
+      commentary.textContent = cat.commentary[0];
+      statusLine.textContent = "> RUNNING";
+      recBox.style.display = "none";
+
+      const duration = 2600;
       const start = performance.now();
+      let lastUpTo = -1;
+      let lastCommentaryIdx = -1;
+      const N = years.length;
+
       function frame(now) {
-        const t = Math.min(1, (now - start) / duration);
-        const eased = easeOutCubic(t);
-        renderFor(cat, toPhase, eased);
-        if (t < 1) {
+        const linear = Math.min(1, (now - start) / duration);
+        const eased = easeInOutCubic(linear);
+        const scaled = eased * N;
+
+        let upTo, animProgress;
+        if (linear >= 1) {
+          upTo = N;
+          animProgress = 1;
+        } else {
+          upTo = Math.min(N, Math.floor(scaled) + 1);
+          animProgress = scaled - Math.floor(scaled);
+        }
+
+        renderFor(cat, upTo, animProgress);
+        updatePhaseBar(eased);
+
+        const cIdx = Math.min(N - 1, Math.floor(scaled));
+        if (cIdx !== lastCommentaryIdx) {
+          commentary.textContent = cat.commentary[cIdx];
+          lastCommentaryIdx = cIdx;
+        }
+
+        if (upTo !== lastUpTo) {
+          updateSidebar(cat, upTo);
+          lastUpTo = upTo;
+        }
+
+        if (linear < 1) {
           animTimer = requestAnimationFrame(frame);
         } else {
-          if (onDone) onDone();
+          updateSidebar(cat, N);
+          statusLine.textContent = "> COMPLETE";
+          recText.textContent = recommendations[activeKey] || "";
+          recBox.style.display = "block";
         }
       }
       animTimer = requestAnimationFrame(frame);
-    }
-
-    let pendingTimeout = null;
-    function runSequence(cat) {
-      if (animTimer) cancelAnimationFrame(animTimer);
-      if (pendingTimeout) clearTimeout(pendingTimeout);
-      phase = 0;
-      updateSidebar(cat, 0);
-      updatePhaseBar(0);
-      commentary.innerHTML = "> RUNNING SEQUENCE...";
-      statusLine.textContent = "> RUNNING";
-      recBox.style.display = "none";
-      renderFor(cat, 0, 0);
-
-      function next() {
-        phase++;
-        if (phase > years.length) {
-          statusLine.textContent = "> COMPLETE";
-          playBtn.textContent = "↺ REPLAY";
-          recText.textContent = recommendations[activeKey] || "";
-          recBox.style.display = "block";
-          return;
-        }
-        commentary.textContent = cat.commentary[phase - 1];
-        updatePhaseBar(phase);
-        animatePhase(cat, phase, () => {
-          updateSidebar(cat, phase);
-          pendingTimeout = setTimeout(next, 110);
-        });
-      }
-      next();
-    }
-
-    function stepOnce(cat) {
-      if (animTimer) cancelAnimationFrame(animTimer);
-      if (phase >= years.length) {
-        phase = 0;
-        updateSidebar(cat, 0);
-        updatePhaseBar(0);
-        renderFor(cat, 0, 0);
-        recBox.style.display = "none";
-      }
-      phase++;
-      commentary.textContent = cat.commentary[phase - 1];
-      updatePhaseBar(phase);
-      animatePhase(cat, phase, () => {
-        updateSidebar(cat, phase);
-        if (phase >= years.length) {
-          statusLine.textContent = "> COMPLETE";
-          playBtn.textContent = "↺ REPLAY";
-          recText.textContent = recommendations[activeKey] || "";
-          recBox.style.display = "block";
-        }
-      });
     }
 
     function openCategory(key) {
@@ -760,38 +757,22 @@ export default function ImpactExplorer() {
       chartView.style.display = "block";
       chartTitle.textContent = "> " + cat.title;
       chartSubtitle.textContent = cat.subtitle;
-      playBtn.textContent = "▶ REPLAY";
-      runSequence(cat);
+      playAnimation(cat);
     }
 
     const onBack = () => {
       if (animTimer) cancelAnimationFrame(animTimer);
-      if (pendingTimeout) clearTimeout(pendingTimeout);
       chartView.style.display = "none";
       homeView.style.display = "block";
       statusLine.textContent = "> READY";
       activeKey = null;
-      phase = 0;
-    };
-    const onPlay = () => {
-      if (!activeKey) return;
-      runSequence(categories[activeKey]);
-    };
-    const onStep = () => {
-      if (!activeKey) return;
-      stepOnce(categories[activeKey]);
     };
     backBtn.addEventListener("click", onBack);
-    playBtn.addEventListener("click", onPlay);
-    stepBtn.addEventListener("click", onStep);
 
     return () => {
       clearInterval(clockId);
       if (animTimer) cancelAnimationFrame(animTimer);
-      if (pendingTimeout) clearTimeout(pendingTimeout);
       backBtn.removeEventListener("click", onBack);
-      playBtn.removeEventListener("click", onPlay);
-      stepBtn.removeEventListener("click", onStep);
     };
   }, []);
 
@@ -1018,46 +999,6 @@ export default function ImpactExplorer() {
               </div>
             </div>
 
-            <div
-              style={{
-                display: "grid",
-                gridTemplateColumns: "1fr 1fr",
-                gap: "6px",
-              }}
-            >
-              <button
-                id="play-btn"
-                style={{
-                  fontFamily: "'Courier New', monospace",
-                  fontSize: "10px",
-                  letterSpacing: "0.08em",
-                  padding: "6px",
-                  background: "#1a1a1a",
-                  color: "#f5f3ec",
-                  border: "1px solid #1a1a1a",
-                  borderRadius: 0,
-                  cursor: "pointer",
-                }}
-              >
-                ▶ REPLAY
-              </button>
-              <button
-                id="step-btn"
-                style={{
-                  fontFamily: "'Courier New', monospace",
-                  fontSize: "10px",
-                  letterSpacing: "0.08em",
-                  padding: "6px",
-                  background: "#f5f3ec",
-                  color: "#1a1a1a",
-                  border: "1px solid #1a1a1a",
-                  borderRadius: 0,
-                  cursor: "pointer",
-                }}
-              >
-                STEP ▶
-              </button>
-            </div>
           </div>
         </div>
 
