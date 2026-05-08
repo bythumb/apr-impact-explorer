@@ -13,12 +13,12 @@ const COVERS = [
 ];
 
 const DEMOGRAPHICS = [
-  { label: "FEMALE 13–17", pct: 52 },
-  { label: "FEMALE 18–24", pct: 26 },
-  { label: "MALE 13–17", pct: 9 },
+  { label: "FEMALE 13–17", pct: 47 },
+  { label: "FEMALE 18–24", pct: 24 },
+  { label: "MALE 13–17", pct: 11 },
   { label: "FEMALE 25–34", pct: 7 },
-  { label: "MALE 18–24", pct: 4 },
-  { label: "OTHER", pct: 2 },
+  { label: "MALE 18–24", pct: 6 },
+  { label: "OTHER", pct: 5 },
 ];
 
 const GEO = [
